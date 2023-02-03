@@ -30,8 +30,7 @@ export default async function handler(req, res) {
 
     res.status(400).json({
       success: false,
-      error: "Unable to generate",
-      key: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      error: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     });
   }
 }
