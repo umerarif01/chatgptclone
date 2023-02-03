@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       success: true,
       message: response.data.choices[0].text,
+      key: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     });
   } catch (error) {
     if (error.response) {
