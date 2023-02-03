@@ -21,6 +21,12 @@ body {
   background-color: #202123;
 }
 
+@media only screen and (max-width: 600px) {
+  .sidemenu {
+    width: 150px;
+  }
+}
+
 .sidemenu-button {
   padding: 12px;
   border: 1px solid white;
