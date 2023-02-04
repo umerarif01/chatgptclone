@@ -35,8 +35,15 @@ body {
   cursor: pointer;
 }
 
+label {
+  margin: 4px;
+
+  font-weight: bold;
+}
+
 .models {
   margin-top: 10px;
+  text-align: left;
 }
 
 select {

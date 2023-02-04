@@ -25,7 +25,7 @@ export default function Home() {
   }
 
   function fetchModels() {
-    fetch("/api/models")
+    fetch("https://gptbackend-lut4.onrender.com/models")
       .then((res) => res.json())
       .then((data) => {
         console.log(data.models);
@@ -45,16 +45,19 @@ export default function Home() {
     setChatLog(chatLogNew);
 
     const messages = chatLogNew.map((message) => message.message).join("\n");
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: messages,
-        currentModel,
-      }),
-    });
+    const response = await fetch(
+      "https://gptbackend-lut4.onrender.com/generate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: messages,
+          currentModel,
+        }),
+      }
+    );
     const data = await response.json();
     setLoading(true);
     console.log(data);
@@ -76,6 +79,7 @@ export default function Home() {
             New Chat
           </div>
           <div className="models">
+            <label>Select Model:</label>
             <select onChange={(e) => setCurrentModel(e.target.value)}>
               {models.map((model, index) => (
                 <option key={index} value={model.id}>
