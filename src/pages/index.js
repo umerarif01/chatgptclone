@@ -24,18 +24,18 @@ export default function Home() {
     setChatLog([]);
   }
 
-  function fetchModels() {
-    fetch("https://gptbackend-lut4.onrender.com/models")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data.models);
-        setModels(data.models);
-      });
-  }
+  // function fetchModels() {
+  //   fetch("https://gptbackend-lut4.onrender.com/models")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data.models);
+  //       setModels(data.models);
+  //     });
+  // }
 
-  useEffect(() => {
-    fetchModels();
-  }, []);
+  // useEffect(() => {
+  //   fetchModels();
+  // }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -71,11 +71,18 @@ export default function Home() {
       </Head>
       <main className="App">
         <aside className="sidemenu">
+          <Image
+            src="/borgfy.png"
+            width={240}
+            height={120}
+            alt="gpt"
+            className={`logo`}
+          />
           <div className="sidemenu-button" onClick={clearChat}>
             <span className="">+</span>
             New Chat
           </div>
-          <div className="models">
+          {/* <div className="models">
             <label>Select Model:</label>
             <select onChange={(e) => setCurrentModel(e.target.value)}>
               {models.map((model, index) => (
@@ -84,26 +91,23 @@ export default function Home() {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
         </aside>
         <section className="chatbox">
           <div className="chat-log">
             {chatLog.map((message, index) => (
               <ChatMessage key={index} message={message} />
             ))}
+            {!loading ? <Loader /> : <></>}
           </div>
-
+          <div className="margin-above" />
           <div className="chat-input-holder">
             <form onSubmit={handleSubmit}>
-              {!loading ? (
-                <Loader />
-              ) : (
-                <input
-                  onChange={(e) => setPrompt(e.target.value)}
-                  className="chat-input-text"
-                  placeholder="Type your message here"
-                />
-              )}
+              <input
+                onChange={(e) => setPrompt(e.target.value)}
+                className="chat-input-text"
+                placeholder="Type your message here"
+              />
             </form>
           </div>
         </section>
@@ -111,5 +115,3 @@ export default function Home() {
     </>
   );
 }
-
-// #41404e
