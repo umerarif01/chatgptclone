@@ -17,9 +17,15 @@ const ImageLog = ({ imgUrl, loading }) => {
             />
             <div className="message">
               {imgUrl == "" ? (
-                "Create Image with stable diffusion"
+                "Create Image with Stable Diffusion"
               ) : (
-                <Image src={imgUrl} alt="output" width={640} height={640} />
+                <Image
+                  src={imgUrl}
+                  alt="output"
+                  width={640}
+                  height={640}
+                  className="ai-image"
+                />
               )}
             </div>
           </div>

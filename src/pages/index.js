@@ -5,15 +5,14 @@ import styles from "@/styles/Home.module.css";
 import { useState, useEffect } from "react";
 import Chatlog from "components/Chatlog";
 import ImageLog from "components/ImageLog";
+import axios from "axios";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
   const currentModel = "text-davinci-003";
   const [prompt, setPrompt] = useState("");
-  const [prediction, setPrediction] = useState(null);
-  const [error, setError] = useState(null);
-  const [imgUrl, setImgUrl] = useState("");
+  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState(true);
   const [chatLog, setChatLog] = useState([
@@ -31,7 +30,7 @@ export default function Home() {
     setMode(!mode);
   }
 
-  async function handleSubmit(e) {
+  async function generateText(e) {
     e.preventDefault();
     setLoading(false);
     let chatLogNew = [...chatLog, { user: "me", message: `${prompt}` }];
@@ -55,48 +54,36 @@ export default function Home() {
     setChatLog([...chatLogNew, { user: "gpt", message: `${data.message}` }]);
   }
 
-  async function handleImage(e) {
+  const generateImage = async (e) => {
     e.preventDefault();
     setLoading(false);
-    setImgUrl("");
-    const response = await fetch("/api/predictions", {
+    console.log("Generating Image");
+    // You can replace this with different model API's
+    const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2`;
+
+    // Send the request
+    const response = await axios({
+      url: URL,
       method: "POST",
       headers: {
+        Authorization: `Bearer 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`,
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        prompt: prompt,
+      data: JSON.stringify({
+        inputs: prompt,
+        options: { wait_for_model: true },
       }),
+      responseType: "arraybuffer",
     });
-    let prediction = await response.json();
-    if (response.status !== 201) {
-      setError(prediction.detail);
-      return;
-    }
-    setPrediction(prediction);
 
-    while (
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
-      await sleep(1000);
-      const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
-      console.log({ prediction });
-      if (response.status !== 200) {
-        setError(prediction.detail);
-        return;
-      }
-      if (prediction.output != null) {
-        console.log("break");
-        setImgUrl(prediction.output[prediction.output.length - 1]);
-        setPrompt("");
-        setLoading(true);
-        setPrediction(prediction);
-        return;
-      }
-    }
-  }
+    const type = response.headers["content-type"];
+    const data = response.data;
+    const base64data = Buffer.from(data).toString("base64");
+    const img = `data:${type};base64,` + base64data; // <-- This is so we can render it on the page
+    setImage(img);
+    setLoading(true);
+  };
 
   return (
     <>
@@ -116,13 +103,11 @@ export default function Home() {
             alt="gpt"
             className={`logo`}
           />
-          {mode ? (
+          {mode && (
             <div className="sidemenu-button" onClick={clearChat}>
-              <span className="">+</span>
+              <span>+</span>
               New Chat
             </div>
-          ) : (
-            <></>
           )}
 
           <div className="sidemenu-button" onClick={toggleMode}>
@@ -135,18 +120,22 @@ export default function Home() {
             <Chatlog chatLog={chatLog} loading={loading} />
           ) : (
             <>
-              <ImageLog imgUrl={imgUrl} loading={loading} />
+              <ImageLog imgUrl={image} loading={loading} />
             </>
           )}
 
           <div className="margin-above" />
           <div className="chat-input-holder">
-            <form onSubmit={mode ? handleSubmit : handleImage}>
+            <form
+              onSubmit={mode ? generateText : generateImage}
+              className="form"
+            >
               <input
                 onChange={(e) => setPrompt(e.target.value)}
-                className="chat-input-text"
+                className="chat-input"
                 placeholder="Type your prompt here"
               />
+              <input type="submit" value="Send" className="input-button" />
             </form>
           </div>
         </section>

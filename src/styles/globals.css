@@ -23,17 +23,34 @@ body {
 
 @media only screen and (max-width: 600px) {
   .sidemenu {
-    width: 130px;
+    width: 110px;
   }
   .sidemenu-button {
     font-size: small;
+    padding: 2px;
   }
   .chat-log {
     font-size: medium;
   }
   .logo {
-    width: 100px;
-    height: 80px;
+    width: 100%;
+    height: 60px;
+  }
+  .chat-input-holder {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .input-button {
+    display: none;
+  }
+  .ai-image {
+    margin-left: -20px;
+    width: 300px;
+    height: 200px;
+  }
+  .sidemenu-button span {
+    display: none;
   }
 }
 
@@ -44,25 +61,6 @@ body {
   border-radius: 5px;
   text-align: left;
   cursor: pointer;
-}
-
-label {
-  margin: 4px;
-  font-weight: bold;
-}
-
-.models {
-  margin-top: 10px;
-  text-align: left;
-}
-
-select {
-  background-color: #202123;
-  width: 100%;
-  color: white;
-  padding: 10px;
-  border: 1px solid white;
-  border-radius: 5px;
 }
 
 .sidemenu-button span {
@@ -81,9 +79,6 @@ select {
   margin-top: 60px;
 }
 
-.margin-bottom {
-}
-
 .chatbox {
   flex: 1;
   position: relative;
@@ -91,23 +86,43 @@ select {
 }
 
 .chat-input-holder {
-  padding: 14px;
-  width: 50%;
-  margin-right: auto;
+  display: flex;
+  justify-content: center;
 }
 
-.chat-input-text {
+.form {
   position: fixed;
   bottom: 0;
   background-color: #41404e;
-  width: 44%;
-  border: 5px;
-  padding: 12px;
   color: white;
   border-radius: 5px;
-  outline: none;
-  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 5);
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 5);
   margin-bottom: 20px;
+}
+
+.chat-input {
+  background-color: #41404e;
+  border: 5px;
+  color: white;
+  outline: none;
+  padding: 10px;
+  border-radius: 5px;
+  width: 550px;
+}
+
+.input-button {
+  background-color: #5c83f3;
+  color: white;
+  border: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.input-button:hover {
+  background-color: #5278ec;
+  transition: all;
+  transition-duration: 250ms;
 }
 
 .center-div {
@@ -132,7 +147,6 @@ select {
   margin-left: auto;
   margin-right: auto;
   max-width: 1000px;
-
   padding: 12px;
   padding-left: 24px;
   padding-right: 24px;
