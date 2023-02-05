@@ -38,7 +38,7 @@ export default function Home() {
     setChatLog(chatLogNew);
 
     const messages = chatLogNew.map((message) => message.message).join("\n");
-    const response = await fetch("https://gptbackend-lut4.onrender.com", {
+    const response = await fetch(process.env.NEXT_PUBLIC_GPT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +66,7 @@ export default function Home() {
       url: URL,
       method: "POST",
       headers: {
-        Authorization: `Bearer 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`,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE_API_KEY}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
