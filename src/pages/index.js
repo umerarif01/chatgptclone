@@ -3,16 +3,19 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useState, useEffect } from "react";
-import ChatMessage from "components/ChatMessage";
-import Loader from "components/Loader";
+import Chatlog from "components/Chatlog";
+import ImageLog from "components/ImageLog";
 
-const inter = Inter({ subsets: ["latin"] });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
+  const currentModel = "text-davinci-003";
   const [prompt, setPrompt] = useState("");
-  const [models, setModels] = useState([]);
-  const [currentModel, setCurrentModel] = useState("text-davinci-003");
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
+  const [imgUrl, setImgUrl] = useState("");
   const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState(true);
   const [chatLog, setChatLog] = useState([
     {
       user: "gpt",
@@ -24,18 +27,9 @@ export default function Home() {
     setChatLog([]);
   }
 
-  // function fetchModels() {
-  //   fetch("https://gptbackend-lut4.onrender.com/models")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data.models);
-  //       setModels(data.models);
-  //     });
-  // }
-
-  // useEffect(() => {
-  //   fetchModels();
-  // }, []);
+  function toggleMode() {
+    setMode(!mode);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -61,6 +55,49 @@ export default function Home() {
     setChatLog([...chatLogNew, { user: "gpt", message: `${data.message}` }]);
   }
 
+  async function handleImage(e) {
+    e.preventDefault();
+    setLoading(false);
+    setImgUrl("");
+    const response = await fetch("/api/predictions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+      }),
+    });
+    let prediction = await response.json();
+    if (response.status !== 201) {
+      setError(prediction.detail);
+      return;
+    }
+    setPrediction(prediction);
+
+    while (
+      prediction.status !== "succeeded" &&
+      prediction.status !== "failed"
+    ) {
+      await sleep(1000);
+      const response = await fetch("/api/predictions/" + prediction.id);
+      prediction = await response.json();
+      console.log({ prediction });
+      if (response.status !== 200) {
+        setError(prediction.detail);
+        return;
+      }
+      if (prediction.output != null) {
+        console.log("break");
+        setImgUrl(prediction.output[prediction.output.length - 1]);
+        setPrompt("");
+        setLoading(true);
+        setPrediction(prediction);
+        return;
+      }
+    }
+  }
+
   return (
     <>
       <Head>
@@ -72,41 +109,43 @@ export default function Home() {
       <main className="App">
         <aside className="sidemenu">
           <Image
+            priority
             src="/borgfy.png"
             width={240}
             height={120}
             alt="gpt"
             className={`logo`}
           />
-          <div className="sidemenu-button" onClick={clearChat}>
+          {mode ? (
+            <div className="sidemenu-button" onClick={clearChat}>
+              <span className="">+</span>
+              New Chat
+            </div>
+          ) : (
+            <></>
+          )}
+
+          <div className="sidemenu-button" onClick={toggleMode}>
             <span className="">+</span>
-            New Chat
+            {!mode ? <>Generate Text </> : <>Generate Image</>}
           </div>
-          {/* <div className="models">
-            <label>Select Model:</label>
-            <select onChange={(e) => setCurrentModel(e.target.value)}>
-              {models.map((model, index) => (
-                <option key={index} value={model.id}>
-                  {model.id}
-                </option>
-              ))}
-            </select>
-          </div> */}
         </aside>
         <section className="chatbox">
-          <div className="chat-log">
-            {chatLog.map((message, index) => (
-              <ChatMessage key={index} message={message} />
-            ))}
-            {!loading ? <Loader /> : <></>}
-          </div>
+          {mode ? (
+            <Chatlog chatLog={chatLog} loading={loading} />
+          ) : (
+            <>
+              <ImageLog imgUrl={imgUrl} loading={loading} />
+            </>
+          )}
+
           <div className="margin-above" />
           <div className="chat-input-holder">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={mode ? handleSubmit : handleImage}>
               <input
                 onChange={(e) => setPrompt(e.target.value)}
                 className="chat-input-text"
-                placeholder="Type your message here"
+                placeholder="Type your prompt here"
               />
             </form>
           </div>

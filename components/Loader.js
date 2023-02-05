@@ -3,7 +3,7 @@ import React from "react";
 
 const Loader = () => {
   return (
-    <div>
+    <div className="loading">
       <div className={`chat-message chatgpt`}>
         <div className="chat-message-center">
           <Image
