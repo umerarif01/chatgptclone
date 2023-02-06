@@ -6,15 +6,21 @@ import { useState, useEffect } from "react";
 import Chatlog from "components/Chatlog";
 import ImageLog from "components/ImageLog";
 import axios from "axios";
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+import {
+  generateHuggingFace,
+  generateDALLE,
+  generateReplicate,
+  generateAll,
+} from "utils/api";
 
 export default function Home() {
   const currentModel = "text-davinci-003";
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState("");
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState(true);
+  const [model, setModel] = useState("DALL E");
   const [chatLog, setChatLog] = useState([
     {
       user: "gpt",
@@ -30,8 +36,17 @@ export default function Home() {
     setMode(!mode);
   }
 
+  function chooseModel(model) {
+    setModel(model);
+  }
+
   async function generateText(e) {
     e.preventDefault();
+
+    if (prompt === "") {
+      alert("Please type something in the input field");
+      return;
+    }
     setLoading(false);
     let chatLogNew = [...chatLog, { user: "me", message: `${prompt}` }];
     setPrompt("");
@@ -54,43 +69,36 @@ export default function Home() {
     setChatLog([...chatLogNew, { user: "gpt", message: `${data.message}` }]);
   }
 
-  const generateImage = async (e) => {
+  async function generateImage(e) {
     e.preventDefault();
+    if (!prompt) {
+      alert("Please type something in the input field");
+      return;
+    }
+    setImage("");
     setLoading(false);
-    console.log("Generating Image");
-    // You can replace this with different model API's
-    const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1`;
+    let img;
 
-    // Send the request
-    const response = await axios({
-      url: URL,
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE_API_KEY}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify({
-        inputs: prompt,
-        options: { wait_for_model: true },
-        parameters: {
-          width: 800,
-          height: 800,
-          guidance_scale: 9,
-        },
-      }),
-      responseType: "arraybuffer",
-    });
+    switch (model) {
+      case "DALL E":
+        img = await generateDALLE(prompt);
+        break;
+      case "Hugging Face":
+        img = await generateHuggingFace(prompt);
+        break;
+      case "Replicate":
+        img = await generateReplicate(prompt);
+        break;
+      default:
+        img = await generateAll(prompt);
+        setImages(img);
+        break;
+    }
 
-    console.log(response);
-
-    const type = response.headers["content-type"];
-    const data = response.data;
-    const base64data = Buffer.from(data).toString("base64");
-    const img = `data:${type};base64,` + base64data; // <-- This is so we can render it on the page
     setImage(img);
     setLoading(true);
-  };
+    setPrompt("");
+  }
 
   return (
     <>
@@ -117,17 +125,63 @@ export default function Home() {
             </div>
           )}
 
-          <div className="sidemenu-button" onClick={toggleMode}>
-            <span className="">+</span>
-            {!mode ? <>Generate Text </> : <>Generate Image</>}
-          </div>
+          {!mode ? (
+            <>
+              <div className="sidemenu-button" onClick={toggleMode}>
+                <span className="">+</span>
+                Generate Text
+              </div>
+              <p class="generate">Generate Image with:</p>
+              <div
+                className="sidemenu-button"
+                onClick={() => chooseModel("DALL E")}
+              >
+                <span className="">+</span>
+                DALL E
+              </div>
+              <div
+                className="sidemenu-button"
+                onClick={() => chooseModel("Hugging Face")}
+              >
+                <span className="">+</span>
+                Hugging Face SD v2.1
+              </div>
+              <div
+                className="sidemenu-button"
+                onClick={() => chooseModel("Replicate")}
+              >
+                <span className="">+</span>
+                Replicate SD v1
+              </div>
+              <div
+                className="sidemenu-button"
+                onClick={() => chooseModel("All Models")}
+              >
+                <span className="">+</span>
+                All Models
+              </div>
+              <p class="generate">Model Selected:{model}</p>
+            </>
+          ) : (
+            <>
+              <div className="sidemenu-button" onClick={toggleMode}>
+                <span className="">+</span>
+                Generate Image
+              </div>
+            </>
+          )}
         </aside>
         <section className="chatbox">
           {mode ? (
             <Chatlog chatLog={chatLog} loading={loading} />
           ) : (
             <>
-              <ImageLog imgUrl={image} loading={loading} />
+              <ImageLog
+                imgUrl={image}
+                loading={loading}
+                model={model}
+                images={images}
+              />
             </>
           )}
 

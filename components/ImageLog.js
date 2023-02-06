@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import Loader from "./Loader";
 
-const ImageLog = ({ imgUrl, loading }) => {
+const ImageLog = ({ imgUrl, loading, model, images }) => {
   return (
     <>
       {loading ? (
@@ -17,15 +17,32 @@ const ImageLog = ({ imgUrl, loading }) => {
             />
             <div className="message">
               {imgUrl == "" ? (
-                "Create Image with Stable Diffusion"
+                `Create Image with ${model}`
               ) : (
-                <Image
-                  src={imgUrl}
-                  alt="output"
-                  width={640}
-                  height={640}
-                  className="ai-image"
-                />
+                <>
+                  {model !== "All Models" ? (
+                    <img
+                      src={imgUrl}
+                      alt="output"
+                      width={640}
+                      height={640}
+                      className="ai-image"
+                    />
+                  ) : (
+                    images.map((image, index) => (
+                      <div key={index}>
+                        <p className="imgname">{image.name}:</p>
+                        <img
+                          src={image.url}
+                          alt="output"
+                          width={640}
+                          height={640}
+                          className="ai-image"
+                        />
+                      </div>
+                    ))
+                  )}
+                </>
               )}
             </div>
           </div>
