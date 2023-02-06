@@ -59,7 +59,7 @@ export default function Home() {
     setLoading(false);
     console.log("Generating Image");
     // You can replace this with different model API's
-    const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2`;
+    const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1`;
 
     // Send the request
     const response = await axios({
@@ -73,9 +73,16 @@ export default function Home() {
       data: JSON.stringify({
         inputs: prompt,
         options: { wait_for_model: true },
+        parameters: {
+          width: 800,
+          height: 800,
+          guidance_scale: 9,
+        },
       }),
       responseType: "arraybuffer",
     });
+
+    console.log(response);
 
     const type = response.headers["content-type"];
     const data = response.data;
