@@ -31,7 +31,10 @@ async function generateHuggingFace(prompt) {
     },
     data: JSON.stringify({
       inputs: prompt,
-      options: { wait_for_model: true },
+      options: {
+        use_cache: false,
+        wait_for_model: true,
+      },
     }),
     responseType: "arraybuffer",
   });
@@ -80,7 +83,7 @@ async function generateAll(prompt) {
   const [url1, url2, url3] = await Promise.all([
     generateDALLE(prompt),
     generateHuggingFace(prompt),
-    generateReplicate(prompt),
+    generateDALLE(prompt),
   ]);
   return [
     { url: url1, name: "Dall E" },

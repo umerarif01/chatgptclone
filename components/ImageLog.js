@@ -21,13 +21,15 @@ const ImageLog = ({ imgUrl, loading, model, images }) => {
               ) : (
                 <>
                   {model !== "All Models" ? (
-                    <img
-                      src={imgUrl}
-                      alt="output"
-                      width={640}
-                      height={640}
-                      className="ai-image"
-                    />
+                    <>
+                      <img
+                        src={imgUrl}
+                        alt="output"
+                        width={640}
+                        height={640}
+                        className="ai-image"
+                      />
+                    </>
                   ) : (
                     images.map((image, index) => (
                       <div key={index}>

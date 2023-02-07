@@ -43,7 +43,7 @@ export default function Home() {
   async function generateText(e) {
     e.preventDefault();
 
-    if (prompt === "") {
+    if (!prompt) {
       alert("Please type something in the input field");
       return;
     }
@@ -71,10 +71,12 @@ export default function Home() {
 
   async function generateImage(e) {
     e.preventDefault();
+
     if (!prompt) {
       alert("Please type something in the input field");
       return;
     }
+
     setImage("");
     setLoading(false);
     let img;
@@ -97,7 +99,6 @@ export default function Home() {
 
     setImage(img);
     setLoading(true);
-    setPrompt("");
   }
 
   return (
