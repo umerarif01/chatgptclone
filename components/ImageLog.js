@@ -16,27 +16,31 @@ const ImageLog = ({ imgUrl, loading, model, images }) => {
               className={`avatar chatgpt`}
             />
             <div className="message">
-              {imgUrl == "" ? (
+              {!imgUrl ? (
                 `Create Image with ${model}`
               ) : (
                 <>
                   {model !== "All Models" ? (
-                    <>
-                      <img
-                        src={imgUrl}
-                        alt="output"
-                        width={640}
-                        height={640}
-                        className="ai-image"
-                      />
-                    </>
+                    !imgUrl ? (
+                      `Create Image with ${model}`
+                    ) : (
+                      <>
+                        <img
+                          src={imgUrl}
+                          alt="output"
+                          width={640}
+                          height={640}
+                          className="ai-image"
+                        />
+                      </>
+                    )
                   ) : (
                     images.map((image, index) => (
                       <div key={index}>
                         <p className="imgname">{image.name}:</p>
                         <img
                           src={image.url}
-                          alt="output"
+                          alt={image.name}
                           width={640}
                           height={640}
                           className="ai-image"

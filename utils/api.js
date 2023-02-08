@@ -2,7 +2,7 @@ import axios from "axios";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function generateDALLE(prompt) {
+async function generateImage(prompt) {
   const response = await fetch("/api/dallE", {
     method: "POST",
     headers: {
@@ -81,9 +81,9 @@ async function generateReplicate(prompt) {
 
 async function generateAll(prompt) {
   const [url1, url2, url3] = await Promise.all([
-    generateDALLE(prompt),
-    generateHuggingFace(prompt),
-    generateDALLE(prompt),
+    generateImage(prompt),
+    generateImage(prompt),
+    generateImage(prompt),
   ]);
   return [
     { url: url1, name: "Dall E" },
@@ -92,4 +92,4 @@ async function generateAll(prompt) {
   ];
 }
 
-export { generateHuggingFace, generateDALLE, generateReplicate, generateAll };
+export { generateHuggingFace, generateImage, generateReplicate, generateAll };
