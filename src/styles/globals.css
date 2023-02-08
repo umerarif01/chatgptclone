@@ -163,8 +163,8 @@ body {
 
   .ai-image {
     margin-left: -20px;
-    width: 350px;
-    height: 350px;
+    width: 260px;
+    height: 260px;
   }
   .sidemenu-button span {
     display: none;
@@ -181,8 +181,8 @@ body {
   /* For tablets: */
   .ai-image {
     margin-left: -20px;
-    width: 350px;
-    height: 350px;
+    width: 260px;
+    height: 260px;
   }
 }
 
