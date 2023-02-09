@@ -81,10 +81,10 @@ export default function Home() {
           img = await generateImage(prompt);
           break;
         case "Hugging Face":
-          img = await generateImage(prompt);
+          img = await generateHuggingFace(prompt);
           break;
         case "Replicate":
-          img = await generateImage(prompt);
+          img = await generateReplicate(prompt);
           break;
         default:
           img = await generateAll(prompt);

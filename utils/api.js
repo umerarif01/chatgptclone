@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function generateImage(prompt) {
@@ -18,31 +16,29 @@ async function generateImage(prompt) {
 }
 
 async function generateHuggingFace(prompt) {
-  const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2`;
+  const URL = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1`;
 
-  // Send the request
-  const response = await axios({
-    url: URL,
+  const response = await fetch(URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE_API_KEY}`,
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    data: JSON.stringify({
+    body: JSON.stringify({
       inputs: prompt,
       options: {
         use_cache: false,
         wait_for_model: true,
       },
     }),
-    responseType: "arraybuffer",
   });
 
-  const type = response.headers["content-type"];
-  const data = response.data;
+  const type = response.headers.get("content-type");
+  const data = await response.arrayBuffer();
+
   const base64data = Buffer.from(data).toString("base64");
-  const img = `data:${type};base64,` + base64data; // <-- This is so we can render it on the page
+  const img = `data:${type};base64,` + base64data;
   return img;
 }
 
@@ -82,8 +78,8 @@ async function generateReplicate(prompt) {
 async function generateAll(prompt) {
   const [url1, url2, url3] = await Promise.all([
     generateImage(prompt),
-    generateImage(prompt),
-    generateImage(prompt),
+    generateHuggingFace(prompt),
+    generateReplicate(prompt),
   ]);
   return [
     { url: url1, name: "Dall E" },

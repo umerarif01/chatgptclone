@@ -167,7 +167,7 @@ body {
     height: 260px;
   }
   .sidemenu-button span {
-    display: none;
+    font-size: small;
   }
   .generate {
     font-size: medium;
