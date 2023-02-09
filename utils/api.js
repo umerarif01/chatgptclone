@@ -79,7 +79,7 @@ async function generateAll(prompt) {
   const [url1, url2, url3] = await Promise.all([
     generateImage(prompt),
     generateHuggingFace(prompt),
-    generateReplicate(prompt),
+    generateHuggingFace(prompt),
   ]);
   return [
     { url: url1, name: "Dall E" },
